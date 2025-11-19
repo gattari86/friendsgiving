@@ -1,0 +1,8 @@
+{
+  "name": "friendsgiving-2025",
+  "version": 1,
+  "public": true,
+  "env": {},
+  "buildCommand": "",
+  "outputDirectory": "."
+}
