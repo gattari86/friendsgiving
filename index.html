@@ -935,10 +935,6 @@
             <div class="footer-text">¡Nos vemos allá!</div>
 
             <div class="action-buttons">
-                <button class="action-btn" id="addCalendarBtn">
-                    <i class="fa-solid fa-calendar-plus"></i>
-                    Add to Calendar
-                </button>
                 <button class="action-btn" id="directionsBtn">
                     <i class="fa-solid fa-map-location-dot"></i>
                     Get Directions
@@ -974,38 +970,6 @@
                 musicIcon.classList.add('fa-pause', 'playing');
             }
             isPlaying = !isPlaying;
-        });
-
-        // Add to Calendar Functionality
-        document.getElementById('addCalendarBtn').addEventListener('click', () => {
-            // Create iCalendar format
-            const icsContent = `BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Friendsgiving 2025//EN
-CALSCALE:GREGORIAN
-METHOD:PUBLISH
-BEGIN:VEVENT
-UID:friendsgiving-2025-${Date.now()}@friendsgiving.local
-DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z
-DTSTART:20251122T190000
-DTEND:20251122T230000
-SUMMARY:${eventDetails.title}
-LOCATION:${eventDetails.address}
-DESCRIPTION:${eventDetails.description}
-URL:https://friendsgiving.vercel.app
-END:VEVENT
-END:VCALENDAR`;
-
-            // Create blob and download
-            const blob = new Blob([icsContent], { type: 'text/calendar' });
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'friendsgiving-2025.ics');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
         });
 
         // Get Directions Functionality
