@@ -433,7 +433,7 @@
             justify-content: center;
             align-items: center;
             gap: 28px;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
         }
 
         .footer-icons i {
@@ -456,6 +456,49 @@
             font-style: italic;
             opacity: 0.95;
             letter-spacing: 0.5px;
+            margin-bottom: 32px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 28px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px 28px;
+            background: linear-gradient(135deg, var(--warm-tan) 0%, var(--golden-orange) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 6px 20px rgba(207, 135, 65, 0.3);
+            text-decoration: none;
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(207, 135, 65, 0.4);
+        }
+
+        .action-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .action-btn i {
+            font-size: 1.3rem;
+            flex-shrink: 0;
         }
 
         /* Music Player */
@@ -709,6 +752,17 @@
 
             .footer-text {
                 font-size: 1.2rem;
+                margin-bottom: 24px;
+            }
+
+            .action-btn {
+                padding: 14px 24px;
+                font-size: 1rem;
+                gap: 10px;
+            }
+
+            .action-btn i {
+                font-size: 1.1rem;
             }
 
             .music-player {
@@ -879,10 +933,30 @@
                 <i class="fa-solid fa-cake-candles"></i>
             </div>
             <div class="footer-text">¡Nos vemos allá!</div>
+
+            <div class="action-buttons">
+                <button class="action-btn" id="addCalendarBtn">
+                    <i class="fa-solid fa-calendar-plus"></i>
+                    Add to Calendar
+                </button>
+                <button class="action-btn" id="directionsBtn">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    Get Directions
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
+        // Event Details
+        const eventDetails = {
+            title: 'Friendsgiving 2025',
+            date: '2025-11-22',
+            time: '19:00',
+            address: '2443 Grey Reef Drive, Katy, TX 77449',
+            description: 'Join us for Friendsgiving! Potluck at Angie\'s and Herberth\'s place.'
+        };
+
         // Music Player Toggle
         const musicPlayer = document.getElementById('musicPlayer');
         const backgroundMusic = document.getElementById('backgroundMusic');
@@ -900,6 +974,68 @@
                 musicIcon.classList.add('fa-pause', 'playing');
             }
             isPlaying = !isPlaying;
+        });
+
+        // Add to Calendar Functionality
+        document.getElementById('addCalendarBtn').addEventListener('click', () => {
+            // Create iCalendar format
+            const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Friendsgiving 2025//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:friendsgiving-2025-${Date.now()}@friendsgiving.local
+DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z
+DTSTART:20251122T190000
+DTEND:20251122T230000
+SUMMARY:${eventDetails.title}
+LOCATION:${eventDetails.address}
+DESCRIPTION:${eventDetails.description}
+URL:https://friendsgiving.vercel.app
+END:VEVENT
+END:VCALENDAR`;
+
+            // Create blob and download
+            const blob = new Blob([icsContent], { type: 'text/calendar' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'friendsgiving-2025.ics');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        });
+
+        // Get Directions Functionality
+        document.getElementById('directionsBtn').addEventListener('click', () => {
+            const address = encodeURIComponent(eventDetails.address);
+
+            // Check if on mobile
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+            if (isMobile) {
+                // Mobile: Use device's native maps app
+                // Try Google Maps first, then Apple Maps
+                const googleMapsUrl = `https://maps.google.com/?q=${address}`;
+                const appleMapsUrl = `maps://maps.apple.com/?address=${address}`;
+
+                // Try opening Apple Maps first on iOS
+                if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+                    window.location.href = appleMapsUrl;
+                    // Fallback to Google Maps if Apple Maps doesn't work
+                    setTimeout(() => {
+                        window.location.href = googleMapsUrl;
+                    }, 500);
+                } else {
+                    // Android: Open Google Maps
+                    window.location.href = googleMapsUrl;
+                }
+            } else {
+                // Desktop: Open Google Maps in new tab
+                window.open(`https://maps.google.com/?q=${address}`, '_blank');
+            }
         });
     </script>
 </body>
